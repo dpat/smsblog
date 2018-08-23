@@ -9,9 +9,10 @@ from twilio.twiml.messaging_response import MessagingResponse, Message
 from .database import DB
 from .database.utils import create_tables
 from .errors import badrequest, forbidden, gone, internalservererror, \
-    methodnotallowed, notfound, unauthorized
+                    methodnotallowed, notfound, unauthorized
 from .helpers.bphandler import BPHandler
-from .helpers.security import gen_token, list_token, verify_request
+from .helpers.security import gen_token, list_token, verify_request, \
+                              verify_twilio
 from .routes import blog, personal, random, reminder
 
 app = Flask(__name__)
@@ -21,9 +22,16 @@ app = Flask(__name__)
 def sms_handler():
 
     resp = MessagingResponse()
-    # confirm request is coming from twilio or front end
-    if not verify_request(request, app):
-        resp.message("unverified request has been sent")
+    num = str(request.form['Number'])
+
+    # confirm request is coming from twilio
+    if not verify_twilio(request, app):
+        resp.message("unverified twilio request has been sent")
+        return str(resp)
+
+    # confirm request is coming from correct phone line
+    if not num == app.config.get['num']:
+        resp.message("unverified twilio number has been used")
         return str(resp)
 
     message_body = str(request.form['Body'])
@@ -31,18 +39,40 @@ def sms_handler():
     resp = MessagingResponse()
 
     if args[0].lower() == 'blog':
-        blog.handler(args[1:])
+        resp.message(str(blog.handler(args[1:])))
     elif args[0].lower() == 'personal':
-        personal.handler(args[1:])
+        resp.message(str(personal.handler(args[1:])))
     elif args[0].lower() == 'reminder':
-        reminder.handler(args[1:])
+        resp.message(str(reminder.handler(args[1:])))
     elif args[0].lower() == 'random':
-        random.handler(args[1:])
+        resp.message(str(random.handler(args[1:])))
     else:
-        random.collector(args)
+        resp.message(str(random.collector(args)))
 
-    resp.message("this is a test")
     return str(resp)
+
+
+@app.route('/api', methods=['POST'])
+def api_handler():
+
+    # confirm request is coming from correct program
+    if not verify_request(request, app):
+        return False
+
+    payload_raw = request.data
+    payload_decoded = payload_raw.decode()
+    args = shlex.split(payload_decoded)
+
+    if args[0].lower() == 'blog':
+        return blog.handler(args[1:])
+    elif args[0].lower() == 'personal':
+        return personal.handler(args[1:])
+    elif args[0].lower() == 'reminder':
+        return reminder.handler(args[1:])
+    elif args[0].lower() == 'random':
+        return random.handler(args[1:])
+    else:
+        return random.collector(args)
 
 
 def config_dabase(app):
@@ -118,6 +148,9 @@ def launch_api():
                      help='port to run the app on',
                      type=int,
                      default=None)
+    run.add_argument('-n', '--num',
+                     help='number of site owner',
+                     default=None)
     run.add_argument('-u', '--url',
                      help='public url of site',
                      default=None)
@@ -137,6 +170,7 @@ def launch_api():
     config_dabase(app)
 
     if cmd == 'run':
+        app.config['num'] = args.num
         app.config['site_url'] = args.url
         app.config['auth_token'] = args.auth
         app.run(debug=args.debug, port=args.port)

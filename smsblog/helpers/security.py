@@ -74,17 +74,21 @@ def get_token(request):
     return token
 
 
+def verify_twilio(request, app):
+
+    # use twilio's docs on validating a request
+    url = app.config.get('site_url')
+    auth_token = app.config.get('auth_token')
+    params = request.form
+    validator = RequestValidator(auth_token)
+    tw_sig = request.headers.get('X-Twilio-Signature')
+    return(validator.validate(url, params, tw_sig))
+
+
 def verify_request(request, app):
     token = get_token(request)
-    if not token:
-        # use twilio's docs on validating a request
-        url = app.config.get('site_url')
-        auth_token = app.config.get('auth_token')
-        params = request.form
-#        sorted_params = collections.OrderedDict(sorted(params.items()))
-        validator = RequestValidator(auth_token)
-        tw_sig = request.headers.get('X-Twilio-Signature')
-        return(validator.validate(url, params, tw_sig))
+    if token is False:
+        return False
     elif check_token(token):
         return True
     else:

@@ -21,11 +21,11 @@ def handler(command):
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
             post_id = command[6:]
-            get_post(post_id)
+            return get_post(post_id)
         if command[0][:3] == '-c=':
             category = command[0][4:]
             post = command[1:]
-            add_post(category, post)
+            return add_post(category, post)
         if command[0][:8] == '-udpate=':
             if command[1][:3] == '-c=':
                 category = command[1][4:]
@@ -33,13 +33,13 @@ def handler(command):
                 category = 'General'
             post_id = command[0][9:]
             post = command[1:]
-            update_post(post_id, category, post)
+            return update_post(post_id, category, post)
         if command[0][:8] == '-delete=':
             post_id = command[9:]
-            delete_post(post_id)
+            return delete_post(post_id)
     else:
         post = command
-        add_post('General', post)
+        return add_post('General', post)
 
 
 def add_post(category, post):
