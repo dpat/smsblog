@@ -78,10 +78,11 @@ def delete_reminder(id):
 
     reminder_id = int(id)
     reminder = query_reminderid(reminder_id)
-    reminder.delete()
+    DB.session.delete(reminder)
 
     DB.session.commit()
-    return make_response('', 204)
+    message = "Reminder number: " + str(reminder_id) + " deleted"
+    return make_response(jsonify(message), 204)
 
 
 def query_reminderid(reminder_id):

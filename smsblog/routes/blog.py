@@ -35,7 +35,7 @@ def handler(command):
             post = command[1:]
             return update_post(post_id, category, post)
         if command[0][:8] == '-delete=':
-            post_id = command[8:]
+            post_id = command[0][8:]
             return delete_post(post_id)
     else:
         post = command
@@ -87,7 +87,8 @@ def update_post(id, category, post):
             setattr(old_post, field, values[field])
 
     DB.session.commit()
-    return make_response('', 204)
+    new_post = query_postid(post_id)
+    return make_response(jsonify(new_post), 204)
 
 
 def delete_post(id):
@@ -95,10 +96,11 @@ def delete_post(id):
 
     post_id = int(id)
     post = query_postid(post_id)
-    post.delete()
+    DB.session.delete(post)
 
     DB.session.commit()
-    return make_response('', 204)
+    message = "blog post number: " + str(post_id) + " deleted"
+    return make_response(jsonify(message), 204)
 
 
 def query_postid(post_id):
