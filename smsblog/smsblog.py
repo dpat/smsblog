@@ -21,7 +21,7 @@ app = Flask(__name__)
 def sms_handler():
 
     # confirm request is coming from twilio or front end
-    # verify_request(request, app)
+    verify_request(request, app)
 
     message_body = str(request.form['Body'])
     args = shlex.split(message_body)
@@ -38,7 +38,7 @@ def sms_handler():
     else:
         resp.message = random.collector(args)
 
-    resp.message = "this is a test"
+    resp.message("this is a test")
     return str(resp)
 
 

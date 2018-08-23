@@ -2,7 +2,6 @@
 
 import logging
 from flask import Flask, jsonify, request, make_response, Blueprint
-from twilio import twiml
 from sqlalchemy import inspect
 
 from ..helpers.bphandler import BPHandler
@@ -23,7 +22,7 @@ def collector(command):
         post = command[1:]
         add_post(category, post)
     else:
-        add_post(command)
+        add_post('collected', command)
 
 
 def handler(command):

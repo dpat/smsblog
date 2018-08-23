@@ -18,7 +18,7 @@ REMINDER_BP = Blueprint('reminder', __name__)
 BPHandler.add_blueprint(REMINDER_BP)
 
 
-def reminder_handler(command):
+def handler(command):
 
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
