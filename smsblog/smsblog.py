@@ -20,8 +20,11 @@ app = Flask(__name__)
 @app.route('/sms', methods=['POST'])
 def sms_handler():
 
+    resp = MessagingResponse()
     # confirm request is coming from twilio or front end
-    verify_request(request, app)
+    if not verify_request(request, app):
+        resp.message("unverified request has been sent")
+        return str(resp)
 
     message_body = str(request.form['Body'])
     args = shlex.split(message_body)
