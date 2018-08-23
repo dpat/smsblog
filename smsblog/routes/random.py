@@ -18,7 +18,7 @@ BPHandler.add_blueprint(RANDOM_BP)
 
 def collector(command):
     if command[0][:3] == '-c=':
-        category = command[0][4:]
+        category = command[0][3:]
         post = command[1:]
         return add_post(category, post)
     else:
@@ -29,22 +29,22 @@ def handler(command):
     # yes I have tried argparse
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
-            post_id = command[0][6:]
+            post_id = command[0][5:]
             return get_post(post_id)
         if command[0][:3] == '-c=':
-            category = command[0][4:]
+            category = command[0][3:]
             post = command[1:]
             return add_post(category, post)
         if command[0][:8] == '-udpate=':
             if command[1][:3] == '-c=':
-                category = command[1][4:]
+                category = command[1][3:]
             else:
                 category = 'General'
-            post_id = command[0][9:]
+            post_id = command[0][8:]
             post = command[1:]
             return update_post(post_id, category, post)
         if command[0][:8] == '-delete=':
-            post_id = command[0][9:]
+            post_id = command[0][8:]
             return delete_post(post_id)
     else:
         post = command

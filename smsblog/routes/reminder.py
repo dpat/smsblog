@@ -22,16 +22,16 @@ def handler(command):
 
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
-            reminder_id = command[0][6:]
+            reminder_id = command[0][5:]
             return get_reminder(reminder_id)
         if command[0][:8] == '-delete=':
-            reminder_id = command[0][9:]
+            reminder_id = command[0][8:]
             return delete_reminder(reminder_id)
     else:
         days = command[0]
         time = command[1]
         if command[2][:3] == '-r=':
-            recurring = command[2][4:]
+            recurring = command[2][3:]
             message = command[3:]
         else:
             recurring = 'once'

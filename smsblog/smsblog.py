@@ -11,6 +11,7 @@ from .database.utils import create_tables
 from .errors import badrequest, forbidden, gone, internalservererror, \
                     methodnotallowed, notfound, unauthorized
 from .helpers.bphandler import BPHandler
+from .helpers.formatting import response_string
 from .helpers.security import gen_token, list_token, verify_request, \
                               verify_twilio
 from .routes import blog, personal, random, reminder
@@ -39,15 +40,15 @@ def sms_handler():
     resp = MessagingResponse()
 
     if args[0].lower() == 'blog':
-        resp.message(str(blog.handler(args[1:])))
+        resp.message(response_string(blog.handler(args[1:])))
     elif args[0].lower() == 'personal':
-        resp.message(str(personal.handler(args[1:])))
+        resp.message(response_string(personal.handler(args[1:])))
     elif args[0].lower() == 'reminder':
-        resp.message(str(reminder.handler(args[1:])))
+        resp.message(response_string(reminder.handler(args[1:])))
     elif args[0].lower() == 'random':
-        resp.message(str(random.handler(args[1:])))
+        resp.message(response_string(random.handler(args[1:])))
     else:
-        resp.message(str(random.collector(args)))
+        resp.message(response_string(random.collector(args)))
 
     return str(resp)
 

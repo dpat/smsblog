@@ -19,7 +19,7 @@ class Reminder(DB.Model):
 
     __tablename__ = 'reminder'
     reminderid = DB.Column(DB.Integer, nullable=False, primary_key=True)
-    reminder = DB.Column(DB.Text, nullable=False)
+    message = DB.Column(DB.Text, nullable=False)
     date = DB.Column(DB.DateTime, nullable=False,
                      default=datetime.datetime.utcnow)
     days = DB.Column(DB.Integer, nullable=False)
