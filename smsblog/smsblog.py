@@ -28,15 +28,15 @@ def sms_handler():
     resp = MessagingResponse()
 
     if args[0].lower() == 'blog':
-        resp.message = blog.handler(args[1:])
+        blog.handler(args[1:])
     elif args[0].lower() == 'personal':
-        resp.message = personal.handler(args[1:])
+        personal.handler(args[1:])
     elif args[0].lower() == 'reminder':
-        resp.message = reminder.handler(args[1:])
+        reminder.handler(args[1:])
     elif args[0].lower() == 'random':
-        resp.message = random.handler(args[1:])
+        random.handler(args[1:])
     else:
-        resp.message = random.collector(args)
+        random.collector(args)
 
     resp.message("this is a test")
     return str(resp)
