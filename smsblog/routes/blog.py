@@ -93,7 +93,8 @@ def update_post(id, category, post):
 def delete_post(id):
     """Drop a post from the database"""
 
-    post = query_postid(id)
+    post_id = int(id)
+    post = query_postid(post_id)
     post.delete()
 
     DB.session.commit()

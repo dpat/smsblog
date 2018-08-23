@@ -76,7 +76,8 @@ def get_reminder(id):
 def delete_reminder(id):
     """Drop a reminder from the database"""
 
-    reminder = query_reminderid(id)
+    reminder_id = int(id)
+    reminder = query_reminderid(reminder_id)
     reminder.delete()
 
     DB.session.commit()
