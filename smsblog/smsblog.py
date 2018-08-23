@@ -38,6 +38,7 @@ def sms_handler():
     else:
         resp.message = random.collector(args)
 
+    resp.message = "this is a test"
     return str(resp)
 
 
