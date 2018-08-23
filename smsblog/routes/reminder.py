@@ -22,10 +22,10 @@ def handler(command):
 
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
-            reminder_id = command[6:]
+            reminder_id = command[0][6:]
             return get_reminder(reminder_id)
         if command[0][:8] == '-delete=':
-            reminder_id = command[9:]
+            reminder_id = command[0][9:]
             return delete_reminder(reminder_id)
     else:
         days = command[0]

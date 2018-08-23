@@ -29,7 +29,7 @@ def handler(command):
     # yes I have tried argparse
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
-            post_id = command[6:]
+            post_id = command[0][6:]
             return get_post(post_id)
         if command[0][:3] == '-c=':
             category = command[0][4:]
@@ -44,7 +44,7 @@ def handler(command):
             post = command[1:]
             return update_post(post_id, category, post)
         if command[0][:8] == '-delete=':
-            post_id = command[9:]
+            post_id = command[0][9:]
             return delete_post(post_id)
     else:
         post = command

@@ -20,7 +20,7 @@ def handler(command):
     # yes I have tried argparse
     if command[0][0] == '-':
         if command[0][:5] == '-get=':
-            post_id = command[6:]
+            post_id = command[0][6:]
             return get_post(post_id)
         if command[0][:3] == '-c=':
             category = command[0][4:]
