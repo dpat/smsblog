@@ -36,6 +36,8 @@ def sms_handler():
         return str(resp)
 
     message_body = str(request.form['Body'])
+    message_body = message_body.replace('"', r'\"')
+    message_body = message_body.replace("'", r"\'")
     args = shlex.split(message_body)
     resp = MessagingResponse()
 
