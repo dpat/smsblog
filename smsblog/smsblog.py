@@ -22,7 +22,7 @@ app = Flask(__name__)
 def sms_handler():
 
     resp = MessagingResponse()
-    num = str(request.form['Number'])
+    num = str(request.form['From'])
 
     # confirm request is coming from twilio
     if not verify_twilio(request, app):
