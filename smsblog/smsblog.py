@@ -5,7 +5,7 @@ import os
 import shlex
 
 from flask import Flask, request
-from twilio import twiml
+from twilio.twiml.messaging_response import MessagingResponse, Message
 from .database import DB
 from .database.utils import create_tables
 from .errors import badrequest, forbidden, gone, internalservererror, \
@@ -21,11 +21,11 @@ app = Flask(__name__)
 def sms_handler():
 
     # confirm request is coming from twilio or front end
-    verify_request(request, app)
+    # verify_request(request, app)
 
     message_body = str(request.form['Body'])
     args = shlex.split(message_body)
-    resp = twiml.MessagingResponse()
+    resp = MessagingResponse()
 
     if args[0].lower() == 'blog':
         resp.message = blog.handler(args[1:])
@@ -40,17 +40,6 @@ def sms_handler():
 
     resp.message = "this is a test"
     return str(resp)
-
-
-def config_app(name):
-    """
-    Configure the Flask app before standing it up.
-
-    :param name: string, Name of the flask app.
-    :return: Flask object.
-    """
-    app = Flask(name)
-    return app
 
 
 def config_dabase(app):
@@ -124,6 +113,7 @@ def launch_api():
 
     run.add_argument('-p', '--port',
                      help='port to run the app on',
+                     type=int,
                      default=None)
     run.add_argument('-u', '--url',
                      help='public url of site',
@@ -140,7 +130,6 @@ def launch_api():
     args = parser.parse_args()
     cmd = vars(args).pop('subcmd')
     setup_logging(args.debug, args.verbose)
-    app = config_app('smsblog')
     BPHandler.register_blueprints(app)
     config_dabase(app)
 
