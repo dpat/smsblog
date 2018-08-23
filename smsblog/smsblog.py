@@ -25,7 +25,7 @@ def sms_handler():
 
     message_body = str(request.form['Body'])
     args = shlex.split(message_body)
-    resp = twiml.Response()
+    resp = twiml.MessagingResponse()
 
     if args[0].lower() == 'blog':
         resp.message = blog.handler(args[1:])
