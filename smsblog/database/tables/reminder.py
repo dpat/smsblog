@@ -22,6 +22,6 @@ class Reminder(DB.Model):
     message = DB.Column(DB.Text, nullable=False)
     date = DB.Column(DB.DateTime, nullable=False,
                      default=datetime.datetime.utcnow)
-    days = DB.Column(DB.Integer, nullable=False)
-    time = DB.Column(DB.Integer, nullable=False)
+    days = DB.Column(DB.Text, nullable=False)
+    time = DB.Column(DB.Text, nullable=False)
     recurring = DB.Column(DB.Text, nullable=False)

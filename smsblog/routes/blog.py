@@ -99,7 +99,7 @@ def delete_post(id):
     DB.session.delete(post)
 
     DB.session.commit()
-    message = "blog post number: " + str(post_id) + " deleted"
+    message = "blog post number (" + str(post_id) + ") deleted"
     return make_response(jsonify(message), 204)
 
 

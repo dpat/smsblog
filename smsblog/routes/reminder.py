@@ -43,10 +43,10 @@ def handler(command):
 def add_reminder(days, time, recurring, message):
     """Add a single reminder to the database."""
 
+    message = ' '.join(message)
     reminder = {}
     values = {'days': days, 'time': time, 'recurring': recurring,
               'message': message}
-
     for field in values.keys():
         if field in inspect(Reminder).mapper.column_attrs:
             reminder[field] = values[field]
@@ -81,7 +81,7 @@ def delete_reminder(id):
     DB.session.delete(reminder)
 
     DB.session.commit()
-    message = "Reminder number: " + str(reminder_id) + " deleted"
+    message = "Reminder number (" + str(reminder_id) + ") deleted"
     return make_response(jsonify(message), 204)
 
 
