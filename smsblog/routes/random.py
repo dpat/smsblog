@@ -97,7 +97,7 @@ def update_post(id, category, post):
 
     DB.session.commit()
     new_post = query_postid(post_id)
-    return make_response(jsonify(new_post), 204)
+    return make_response(jsonify(table2dict(new_post)), 204)
 
 
 def delete_post(id):
