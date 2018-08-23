@@ -30,7 +30,7 @@ def sms_handler():
         return str(resp)
 
     # confirm request is coming from correct phone line
-    if not num == app.config.get['num']:
+    if not num == app.config.get('num'):
         resp.message("unverified twilio number has been used")
         return str(resp)
 
