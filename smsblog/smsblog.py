@@ -172,13 +172,13 @@ def launch_api():
     setup_logging(args.debug, args.verbose)
     BPHandler.register_blueprints(app)
     config_dabase(app)
-    initiate_reminders()
 
     if cmd == 'run':
         app.config['num'] = args.num
         app.config['site_url'] = args.url
         app.config['auth_token'] = args.auth
         app.run(debug=args.debug, port=args.port)
+        initiate_reminders()
     elif cmd == 'init':
         create_tables()
     elif cmd == 'token':

@@ -18,8 +18,7 @@ class query_reminders(Thread):
         self.start()
     def run(self):
         while True:
-            with app.app_context():
-                send_reminders()
+            send_reminders()
             time.sleep(1)
 
 
