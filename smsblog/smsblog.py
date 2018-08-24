@@ -11,7 +11,8 @@ from .database.utils import create_tables
 from .errors import badrequest, forbidden, gone, internalservererror, \
                     methodnotallowed, notfound, unauthorized
 from .helpers.bphandler import BPHandler
-from .helpers.formatting import response_string, request_args
+from .helpers.formatting import response_string, request_sms_args, \
+                                request_api_args
 from .helpers.security import gen_token, list_token, verify_request, \
                               verify_twilio
 from .routes import blog, personal, random, reminder
@@ -35,7 +36,7 @@ def sms_handler():
         resp.message("unverified twilio number has been used")
         return str(resp)
 
-    args = request_args(request)
+    args = request_sms_args(request)
 
     if args[0].lower() == 'blog':
         resp.message(response_string(blog.handler(args[1:])))
@@ -58,9 +59,7 @@ def api_handler():
     if not verify_request(request, app):
         return False
 
-    payload_raw = request.data
-    payload_decoded = payload_raw.decode()
-    args = shlex.split(payload_decoded)
+    args = request_api_args(request)
 
     if args[0].lower() == 'blog':
         return blog.handler(args[1:])
