@@ -7,7 +7,8 @@ from ..routes.reminder import get_reminder, delete_reminder
 
 
 def initiate_reminders(app):
-    query_reminders(app)
+    with app.app_context():
+        query_reminders(app)
 
 
 class query_reminders(Thread):
