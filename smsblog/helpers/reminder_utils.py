@@ -1,29 +1,29 @@
 import time
 import json
+from flask import current_app as app
 from datetime import datetime, timedelta
 from twilio.rest import Client
 from threading import Thread
 from ..routes.reminder import get_reminder, delete_reminder
 
 
-def initiate_reminders(app):
+def initiate_reminders():
     with app.test_request_context():
-        query_reminders(app)
+        query_reminders()
 
 
 class query_reminders(Thread):
-    def __init__(self, app):
+    def __init__(self):
         Thread.__init__(self)
-        self.app = app
         self.daemon = True
         self.start()
     def run(self):
         while True:
-            send_reminders(self.app)
+            send_reminders()
             time.sleep(1)
 
 
-def send_reminder(message, app):
+def send_reminder(message):
     account_sid = app.config.get('sid')
     auth_token = app.config.get('auth_token')
     client = Client(account_sid, auth_token)
@@ -35,7 +35,7 @@ def send_reminder(message, app):
                               )
 
 
-def send_reminders(app):
+def send_reminders():
     reminders = get_reminder('all')
     reminders = json.loads((reminders.data).decode('utf-8'))
     for reminder in reminders:
@@ -54,7 +54,7 @@ def send_reminders(app):
         now = '{:Y-:m-:d-:H-:M}'.format(datetime.utcnow())
 
         if now == next_reminder:
-            send_reminder(message, app)
+            send_reminder(message)
             if recurring == 'once':
                 delete_reminder(reminder['reminderid'])
 
@@ -63,22 +63,22 @@ def send_reminders(app):
                 next_reminder = '{:H-:M}'.format(next_reminder)
                 now = '{:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message, app)
+                    send_reminder(message)
             elif recurring == 'weekly':
                 next_reminder = '{:a-:H-:M}'.format(next_reminder)
                 now = '{:a-:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message, app)
+                    send_reminder(message)
             elif recurring == 'monthly':
                 next_reminder = '{:d-:H-:M}'.format(next_reminder)
                 now = '{:d-:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message, app)
+                    send_reminder(message)
             elif recurring == 'yearly':
                 next_reminder = '{:m-:d-:H-:M}'.format(next_reminder)
                 now = '{:m-:d-:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message, app)
+                    send_reminder(message)
             elif recurring == 'once':
-                send_reminder(message, app)
+                send_reminder(message)
                 delete_reminder(reminder['reminderid'])
