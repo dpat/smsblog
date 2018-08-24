@@ -10,6 +10,7 @@ from .database import DB
 from .database.utils import create_tables
 from .errors import badrequest, forbidden, gone, internalservererror, \
                     methodnotallowed, notfound, unauthorized
+from .helpers.utils import initiate_reminders
 from .helpers.bphandler import BPHandler
 from .helpers.formatting import response_string, request_sms_args, \
                                 request_api_args
@@ -149,11 +150,17 @@ def launch_api():
     run.add_argument('-n', '--num',
                      help='number of site owner',
                      default=None)
+    run.add_argument('-t', '--tnum',
+                     help='number for twilio reminder texts',
+                     default=None)
     run.add_argument('-u', '--url',
                      help='public url of site',
                      default=None)
     run.add_argument('-a', '--auth',
                      help='twilio authentication token',
+                     default=None)
+    run.add_argument('-s', '--sid',
+                     help='twilio account sid',
                      default=None)
     token = subparser.add_parser('token', help='generate a fresh token')
     token.add_argument('-l', '--list',
@@ -166,6 +173,7 @@ def launch_api():
     setup_logging(args.debug, args.verbose)
     BPHandler.register_blueprints(app)
     config_dabase(app)
+    initiate_reminders()
 
     if cmd == 'run':
         app.config['num'] = args.num
