@@ -20,6 +20,11 @@ from .routes import blog, personal, random, reminder
 app = Flask(__name__)
 
 
+@app.before_first_request
+def start_reminder_thread_job():
+    initiate_reminders()
+
+
 @app.route('/sms', methods=['POST'])
 def sms_handler():
 
@@ -178,7 +183,6 @@ def launch_api():
         app.config['site_url'] = args.url
         app.config['auth_token'] = args.auth
         app.run(debug=args.debug, port=args.port)
-        initiate_reminders()
     elif cmd == 'init':
         create_tables()
     elif cmd == 'token':
