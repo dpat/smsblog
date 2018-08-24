@@ -3,7 +3,7 @@ import json
 from datetime import datetime, timedelta
 from twilio.rest import Client
 from threading import Thread
-from ..routes.reminder import get_reminders, delete_reminder
+from ..routes.reminder import get_reminder, delete_reminder
 
 
 def initiate_reminders(app):
@@ -35,7 +35,7 @@ def send_reminder(message, app):
 
 
 def send_reminders(app):
-    reminders = get_reminders('all')
+    reminders = get_reminder('all')
     reminders = json.loads((reminders.data).decode('utf-8'))
     for reminder in reminders:
         date = reminder['date']
