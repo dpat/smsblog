@@ -172,7 +172,7 @@ def launch_api():
     setup_logging(args.debug, args.verbose)
     BPHandler.register_blueprints(app)
     config_dabase(app)
-    initiate_reminders(app)
+    initiate_reminders()
 
     if cmd == 'run':
         app.config['num'] = args.num
