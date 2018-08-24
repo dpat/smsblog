@@ -2,7 +2,6 @@ import argparse
 import logging
 from logging import handlers
 import os
-import shlex
 
 from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse, Message
@@ -10,7 +9,7 @@ from .database import DB
 from .database.utils import create_tables
 from .errors import badrequest, forbidden, gone, internalservererror, \
                     methodnotallowed, notfound, unauthorized
-from .helpers.utils import initiate_reminders
+from .helpers.reminder_utils import initiate_reminders
 from .helpers.bphandler import BPHandler
 from .helpers.formatting import response_string, request_sms_args, \
                                 request_api_args
@@ -173,7 +172,7 @@ def launch_api():
     setup_logging(args.debug, args.verbose)
     BPHandler.register_blueprints(app)
     config_dabase(app)
-    initiate_reminders()
+    initiate_reminders(app)
 
     if cmd == 'run':
         app.config['num'] = args.num

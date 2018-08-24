@@ -1,27 +1,28 @@
 import time
+import json
 from datetime import datetime, timedelta
-from twilio.twiml.messaging_response import MessagingResponse, Message
 from twilio.rest import Client
 from threading import Thread
-from .routes import reminder
+from ..routes.reminder import get_reminders, delete_reminder
 
 
-def initiate_reminders():
-    query_reminders()
+def initiate_reminders(app):
+    query_reminders(app)
 
 
 class query_reminders(Thread):
-    def __init__(self):
+    def __init__(self, app):
         Thread.__init__(self)
+        self.app = app
         self.daemon = True
         self.start()
     def run(self):
         while True:
-            send_reminders()
+            send_reminders(self.app)
             time.sleep(1)
 
 
-def send_reminder(message):
+def send_reminder(message, app):
     account_sid = app.config.get('sid')
     auth_token = app.config.get('auth_token')
     client = Client(account_sid, auth_token)
@@ -33,9 +34,9 @@ def send_reminder(message):
                               )
 
 
-def send_reminders():
+def send_reminders(app):
     reminders = get_reminders('all')
-    reminders = json.loads((response.data).decode('utf-8'))
+    reminders = json.loads((reminders.data).decode('utf-8'))
     for reminder in reminders:
         date = reminder['date']
         days = reminder['days']
@@ -46,14 +47,14 @@ def send_reminders():
             time = str(date.hour) + str(date.minute)
         recurring = reminder['recurring']
         message = reminder['message']
-        next_reminder = (date + timedelta(days=int(days)))
-                       .replace(hour=int(time[:2]),minute=int(time[2:]))
+        next_reminder = (date + timedelta(days=int(days))).replace(
+                         hour=int(time[:2]), minute=int(time[2:]))
         next_reminder = '{:Y-:m-:d-:H-:M}'.format(next_reminder)
-        now =  '{:Y-:m-:d-:H-:M}'.format(datetime.utcnow())
+        now = '{:Y-:m-:d-:H-:M}'.format(datetime.utcnow())
 
         if now == next_reminder:
-            send_reminder(message)
-            if recurring = 'once':
+            send_reminder(message, app)
+            if recurring == 'once':
                 delete_reminder(reminder['reminderid'])
 
         if now > next_reminder:
@@ -61,22 +62,22 @@ def send_reminders():
                 next_reminder = '{:H-:M}'.format(next_reminder)
                 now = '{:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message)
+                    send_reminder(message, app)
             elif recurring == 'weekly':
                 next_reminder = '{:a-:H-:M}'.format(next_reminder)
                 now = '{:a-:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message)
+                    send_reminder(message, app)
             elif recurring == 'monthly':
                 next_reminder = '{:d-:H-:M}'.format(next_reminder)
                 now = '{:d-:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message)
+                    send_reminder(message, app)
             elif recurring == 'yearly':
                 next_reminder = '{:m-:d-:H-:M}'.format(next_reminder)
                 now = '{:m-:d-:H-:M}'.format(datetime.utcnow())
                 if now == next_reminder:
-                    send_reminder(message)
-            elif once:
-                send_reminder(message)
+                    send_reminder(message, app)
+            elif recurring == 'once':
+                send_reminder(message, app)
                 delete_reminder(reminder['reminderid'])
