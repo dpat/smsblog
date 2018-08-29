@@ -15,9 +15,11 @@ def request_sms_args(request):
     args = shlex.split(message_body)
     return args
 
+
 def request_api_args(request):
     payload_raw = request.data
     payload_decoded = payload_raw.decode()
     payload_decoded = payload_decoded.replace('"', r'\"')
     payload_decoded = payload_decoded.replace("'", r"\'")
     args = shlex.split(payload_decoded)
+    return args
