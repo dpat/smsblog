@@ -19,11 +19,12 @@ from .routes import blog, personal, random, reminder
 
 app = Flask(__name__)
 
+def return_app():
+	return app
 
-@app.before_first_request
-def start_reminder_thread_job():
-    initiate_reminders()
-
+@app.route('/', methods=['GET'])
+def home():
+	return('home')
 
 @app.route('/sms', methods=['POST'])
 def sms_handler():
