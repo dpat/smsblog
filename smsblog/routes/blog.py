@@ -80,7 +80,9 @@ def update_post(id, category, post):
     post_id = int(id)
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
-    setattr(old_post, post, 'test')
+    setattr(old_post, 'post', 'test')
+    DB.session.commit()
+
     values = {'category': category, 'post': new_post}
     for field in values.keys():
         if category == 'no_change':
