@@ -80,12 +80,10 @@ def update_post(id, category, post):
     post_id = int(id)
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
-    values = {'category': category, 'post': new_post}
+    values = {'post': new_post}
     for field in values.keys():
-        if category == 'no_change':
-            continue
         if field in inspect(Personal).mapper.column_attrs:
-            setattr(old_post, field, values[field])
+            setattr(old_post, field, (old_post[field] + values[field]))
 
     DB.session.commit()
     new_post = query_postid(post_id)
