@@ -106,7 +106,7 @@ def update_post(id, title, category, post):
 
     values = {'title': title, 'category': category, 'post': new_post}
     for field in values.keys():
-        if values[field] == 'no_change':
+        if values[field].replace(' ', '') == 'no_change':
             continue
         if field in inspect(Blog).mapper.column_attrs and field == 'post':
             setattr(old_post, field,
