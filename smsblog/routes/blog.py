@@ -34,7 +34,7 @@ def handler(command):
                 category = 'no_change'
                 post = command[1:]
             post_id = command[0][8:]
-            return delete_post(post_id)
+            return update_post(post_id, category, post)
         if command[0][:8] == '-delete=':
             post_id = command[0][8:]
             return delete_post(post_id)
@@ -80,8 +80,6 @@ def update_post(id, category, post):
     post_id = int(id)
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
-    setattr(old_post, 'post', 'test')
-    DB.session.commit()
 
     values = {'category': category, 'post': new_post}
     for field in values.keys():
