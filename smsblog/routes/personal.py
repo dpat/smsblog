@@ -23,33 +23,56 @@ def handler(command):
         if command[0][:5] == '-get=':
             post_id = command[0][5:]
             return get_post(post_id)
-        if command[0][:3] == '-c=':
-            category = command[0][3:]
-            post = command[1:]
-            return add_post(category, post)
-        if command[0][:8] == '-update=':
+        if command[0][:3] == '-t=':
+            title = command[0][3:]
             if command[1][:3] == '-c=':
                 category = command[1][3:]
                 post = command[2:]
             else:
+                category = 'General'
+                post = command[1:]
+            return add_post(title, category, post)
+        if command[0][:3] == '-c=':
+            category = command[0][3:]
+            if command[1][:3] == '-t=':
+                title = command[1][3:]
+                post = command[2:]
+            else:
+                title = ''
+                post = command[1:]
+            return add_post(title, category, post)
+        if command[0][:8] == '-update=':
+            if command[1][:3] == '-t=':
+                title = command[1][3:]
+                category = 'no_change'
+                post = 'no_change'
+            elif command[1][:3] == '-c=':
+                title = 'no_change'
+                category = command[1][3:]
+                post = 'no_change'
+            else:
+                title = 'no_change'
                 category = 'no_change'
                 post = command[1:]
             post_id = command[0][8:]
-            return update_post(post_id, category, post)
+            return update_post(post_id, title, category, post)
         if command[0][:8] == '-delete=':
             post_id = command[0][8:]
             return delete_post(post_id)
+        else:
+            post = command
+            return add_post('', 'General', post)
     else:
         post = command
-        return add_post('General', post)
+        return add_post('', 'General', post)
 
 
-def add_post(category, post):
+def add_post(title, category, post):
     """Add a single post to the database."""
 
     post = ' '.join(post)
     personal = {}
-    values = {'category': category, 'post': post}
+    values = {'title': title, 'category': category, 'post': post}
     for field in values.keys():
         if field in inspect(Personal).mapper.column_attrs:
             personal[field] = values[field]
@@ -76,18 +99,21 @@ def get_post(id):
         return make_response(jsonify(table2dict(post)), 200)
 
 
-def update_post(id, category, post):
+def update_post(id, title, category, post):
     """Update a post based on its post id."""
     post_id = int(id)
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
-    values = {'category': category, 'post': new_post}
+
+    values = {'title': title, 'category': category, 'post': new_post}
     for field in values.keys():
-        if field == 'category' and values[field] == 'no_change':
+        if values[field] == 'no_change':
             continue
-        if field in inspect(Personal).mapper.column_attrs:
+        if field in inspect(Personal).mapper.column_attrs and field == 'post':
             setattr(old_post, field,
                     (table2dict(old_post)[field] + ' ' + values[field]))
+        elif field in inspect(Personal).mapper.column_attrs:
+            setattr(old_post, field, values[field])
 
     DB.session.commit()
     new_post = query_postid(post_id)

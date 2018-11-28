@@ -33,21 +33,22 @@ def handler(command):
             return add_post(title, category, post)
         if command[0][:3] == '-c=':
             category = command[0][3:]
-            post = command[1:]
-            return add_post(category, post)
+            if command[1][:3] == '-t=':
+                title = command[1][3:]
+                post = command[2:]
+            else:
+                title = ''
+                post = command[1:]
+            return add_post(title, category, post)
         if command[0][:8] == '-update=':
             if command[1][:3] == '-t=':
                 title = command[1][3:]
-                if command[2][:3] == '-c=':
-                    category = command[2][3:]
-                    post = command[3:]
-                else:
-                    category = 'no_change'
-                    post = command[2:]
+                category = 'no_change'
+                post = 'no_change'
             elif command[1][:3] == '-c=':
                 title = 'no_change'
                 category = command[1][3:]
-                post = command[2:]
+                post = 'no_change'
             else:
                 title = 'no_change'
                 category = 'no_change'
@@ -57,6 +58,9 @@ def handler(command):
         if command[0][:8] == '-delete=':
             post_id = command[0][8:]
             return delete_post(post_id)
+        else:
+            post = command
+            return add_post('', 'General', post)
     else:
         post = command
         return add_post('', 'General', post)
@@ -100,11 +104,9 @@ def update_post(id, title, category, post):
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
 
-    values = {'category': category, 'post': new_post}
+    values = {'title': title, 'category': category, 'post': new_post}
     for field in values.keys():
-        if field == 'title' and values[field] == 'no_change':
-            continue
-        if field == 'category' and values[field] == 'no_change':
+        if values[field] == 'no_change':
             continue
         if field in inspect(Blog).mapper.column_attrs and field == 'post':
             setattr(old_post, field,
