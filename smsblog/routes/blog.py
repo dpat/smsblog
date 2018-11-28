@@ -79,7 +79,7 @@ def update_post(id, category, post):
     """Update a post based on its post id."""
     post_id = int(id)
     new_post = ' '.join(post)
-    old_post = query_postid(post_id)
+    old_post = DB.session.query(Blog).get(post_id)
     setattr(old_post, 'post', 'test')
     DB.session.commit()
 
