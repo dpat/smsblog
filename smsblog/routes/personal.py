@@ -83,7 +83,8 @@ def update_post(id, category, post):
     values = {'post': new_post}
     for field in values.keys():
         if field in inspect(Personal).mapper.column_attrs:
-            setattr(old_post, field, (old_post.get(field) + ' ' + values[field]))
+            setattr(old_post, field,
+                    (table2dict(old_post)[field] + ' ' + values[field]))
 
     DB.session.commit()
     new_post = query_postid(post_id)

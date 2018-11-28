@@ -26,7 +26,7 @@ def handler(command):
             category = command[0][3:]
             post = command[1:]
             return add_post(category, post)
-        if command[0][:8] == '-udpate=':
+        if command[0][:8] == '-update=':
             if command[1][:3] == '-c=':
                 category = command[1][3:]
                 post = command[2:]
