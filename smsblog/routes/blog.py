@@ -78,9 +78,6 @@ def get_post(id):
 def update_post(id, category, post):
     """Update a post based on its post id."""
     post_id = int(id)
-    new_post = ' '.join(post)
-    old_post = query_postid(post_id)
-
     new_post = query_postid(post_id)
     return make_response(jsonify(table2dict(new_post)), 204)
 
