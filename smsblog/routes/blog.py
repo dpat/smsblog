@@ -80,17 +80,7 @@ def update_post(id, category, post):
     post_id = int(id)
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
-    setattr(old_post, 'post', 'test')
-    DB.session.commit()
 
-    values = {'category': category, 'post': new_post}
-    for field in values.keys():
-        if values[field] == 'no_change':
-            continue
-        if field in table2dict(old_post).keys():
-            setattr(old_post, field, values[field])
-
-    DB.session.commit()
     new_post = query_postid(post_id)
     return make_response(jsonify(table2dict(new_post)), 204)
 
