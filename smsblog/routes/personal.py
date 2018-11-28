@@ -30,10 +30,11 @@ def handler(command):
         if command[0][:8] == '-update=':
             if command[1][:3] == '-c=':
                 category = command[1][3:]
+                post = command[2:]
             else:
-                category = 'General'
+                category = 'no_change'
+                post = command[1:]
             post_id = command[0][8:]
-            post = command[1:]
             return update_post(post_id, category, post)
         if command[0][:8] == '-delete=':
             post_id = command[0][8:]
@@ -80,8 +81,10 @@ def update_post(id, category, post):
     post_id = int(id)
     new_post = ' '.join(post)
     old_post = query_postid(post_id)
-    values = {'post': new_post}
+    values = {'category': category, 'post': new_post}
     for field in values.keys():
+        if field == 'category' and values[field] == 'no_change':
+            continue
         if field in inspect(Personal).mapper.column_attrs:
             setattr(old_post, field,
                     (table2dict(old_post)[field] + ' ' + values[field]))

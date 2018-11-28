@@ -19,15 +19,19 @@ from .routes import blog, personal, random, reminder
 
 app = Flask(__name__)
 
+
 def return_app():
 	return app
+
 
 @app.route('/', methods=['GET'])
 def home():
 	return('home')
 
+
 @app.route('/sms', methods=['POST'])
 def sms_handler():
+
 
     resp = MessagingResponse()
     num = str(request.form['From'])
@@ -79,7 +83,7 @@ def api_handler():
         return random.collector(args)
 
 
-def config_dabase(app):
+def config_database(app):
     """
     Handle database configuration.
 
@@ -177,7 +181,7 @@ def launch_api():
     cmd = vars(args).pop('subcmd')
     setup_logging(args.debug, args.verbose)
     BPHandler.register_blueprints(app)
-    config_dabase(app)
+    config_database(app)
 
     if cmd == 'run':
         app.config['num'] = args.num

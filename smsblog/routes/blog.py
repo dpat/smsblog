@@ -83,10 +83,11 @@ def update_post(id, category, post):
 
     values = {'category': category, 'post': new_post}
     for field in values.keys():
-        if values[field] == 'no_change':
+        if field == 'category' and values[field] == 'no_change':
             continue
-        if field in table2dict(old_post).keys():
-            setattr(old_post, field, values[field])
+        if field in inspect(Blog).mapper.column_attrs:
+            setattr(old_post, field,
+                    (table2dict(old_post)[field] + ' ' + values[field]))
 
     DB.session.commit()
     new_post = query_postid(post_id)
