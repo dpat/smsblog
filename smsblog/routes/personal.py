@@ -27,7 +27,7 @@ def handler(command):
             category = command[0][3:]
             post = command[1:]
             return add_post(category, post)
-        if command[0][:8] == '-udpate=':
+        if command[0][:8] == '-update=':
             if command[1][:3] == '-c=':
                 category = command[1][3:]
             else:
@@ -83,7 +83,7 @@ def update_post(id, category, post):
     values = {'post': new_post}
     for field in values.keys():
         if field in inspect(Personal).mapper.column_attrs:
-            setattr(old_post, field, (old_post[field] + values[field]))
+            setattr(old_post, field, (old_post.get(field) + ' ' + values[field]))
 
     DB.session.commit()
     new_post = query_postid(post_id)
