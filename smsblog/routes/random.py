@@ -17,12 +17,7 @@ BPHandler.add_blueprint(RANDOM_BP)
 
 
 def collector(command):
-    if command[0][:3] == '-c=':
-        category = command[0][3:]
-        post = command[1:]
-        return add_post(category, post)
-    else:
-        return add_post('collected', command)
+    return add_post('', 'collected', command)
 
 
 def handler(command):
