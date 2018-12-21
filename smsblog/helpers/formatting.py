@@ -12,7 +12,11 @@ def request_sms_args(request):
     message_body = str(request.form['Body'])
     message_body = message_body.replace('"', r'\"')
     message_body = message_body.replace("'", r"\'")
+    message_body = message_body.replace("\n", "<br/>")
     args = shlex.split(message_body)
+#    for i in range(0, len(args)):
+#        if args[i] == '---':
+#            args[i] = '\n'
     return args
 
 
