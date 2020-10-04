@@ -2,19 +2,8 @@ import argparse
 import logging
 from logging import handlers
 import os
-import json
-import base64
-import requests
-import datetime
-from twilio.rest import Client
 
-ACCOUNT_SID = 'ACece666d4e0527c050070a6635e0355dc'
-AUTH_TOKEN = '620c522b5424afa689328196ffceb3c9'
-NOTIFY_SERVICE_SID = 'ISb17d4f8b7da6914ac19c89b85fa1ea7e'
-
-client = Client(ACCOUNT_SID, AUTH_TOKEN)
-
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request
 from twilio.twiml.messaging_response import MessagingResponse, Message
 from .database import DB
 from .database.utils import create_tables
@@ -26,71 +15,19 @@ from .helpers.formatting import response_string, request_sms_args, \
                                 request_api_args
 from .helpers.security import gen_token, list_token, verify_request, \
                               verify_twilio
-from .routes import blog, personal, random, reminder, numbers
+from .routes import blog, personal, random, reminder
 
 app = Flask(__name__)
 
 
 def return_app():
-        return app
+	return app
 
 
 @app.route('/', methods=['GET'])
 def home():
-        return('home')
+	return('home')
 
-
-def get_day_score(date):
-    apikey = '7240a951-22c7-4a0c-b816-ef4ef6'
-    try:
-        response = requests.get(
-
-            url='https://api.mysportsfeeds.com/v2.1/pull/nba/current/date/{0}/games.json?status=final'.format(date),
-            params={
-                "fordate": date
-            },
-            headers={
-                "Authorization": "Basic " + base64.b64encode('{}:{}'.format(apikey,'MYSPORTSFEEDS').encode('utf-8')).decode('ascii')
-            }
-        )
-
-        print('Response HTTP Status Code: {status_code}'.format(
-            status_code=response.status_code))
-    except requests.exceptions.RequestException:
-        print('HTTP Request failed')
-    jsonVals = json.loads(response.text)
-    games = jsonVals['games']
-    scores = []
-    for game in games:
-        score = {}
-        score['away'] = {}
-        score['home'] = {}
-        score['away']['team'] = game['schedule']['awayTeam']['abbreviation']
-        score['home']['team'] = game['schedule']['homeTeam']['abbreviation']
-        score['away']['score'] = game['score']["awayScoreTotal"]
-        score['home']['score'] = game['score']["homeScoreTotal"]
-        scores.append(score)
-    smsString = ''
-    for score in scores:
-        awayScore = score['away']['score']
-        homeScore = score['home']['score']
-        awayTeam = score['away']['team']
-        homeTeam = score['home']['team']
-        if homeScore > awayScore:
-            winningTeam = homeTeam
-            winningScore = homeScore
-            losingScore = awayScore
-        elif homeScore < awayScore:
-            winningTeam = awayTeam
-            winningScore = awayScore
-            losingScore = homeScore
-        else:
-            winningTeam = ''
-            winningScore = homeScore
-            losingScore = homeScore
-
-        smsString = smsString + ('{0} at {1}, final {2}-{3} {4}'.format(awayTeam, homeTeam, winningScore, losingScore, winningTeam))
-    return smsString
 
 @app.route('/sms', methods=['POST'])
 def sms_handler():
@@ -103,9 +40,6 @@ def sms_handler():
     if not verify_twilio(request, app):
         resp.message("unverified twilio request has been sent")
         return str(resp)
-        smsString = get_day_score('20200819')
-        responseScore = make_response(jsonify(smsString), 201)
-        resp.message(response_string(responseScore))
 
     # confirm request is coming from correct phone line
     if not num == app.config.get('num'):
@@ -145,29 +79,9 @@ def api_handler():
         return reminder.handler(args[1:])
     elif args[0].lower() == 'random':
         return random.handler(args[1:])
-    elif args[0].lower() == 'daily_scores':
-        return send_bulk_sms()
     else:
-        return send_bulk_sms()
-	#numbers.handler(args)
+        return random.collector(args)
 
-def send_bulk_sms():
-    prevday = datetime.datetime.today()-datetime.timedelta(1)
-    date = prevday.strftime('%Y%m%d')
-    body = get_day_score(date)
-    #return 'this is a string'
-    #bindings = "{'binding_type':'sms','address':'+15173031634'}"
-    binding = client.notify.services(NOTIFY_SERVICE_SID).bindings.create(
-        # We recommend using a GUID or other anonymized identifier for Identity
-        identity='00000001',
-        binding_type='sms',
-        address='+15173031634')
-    notification = client.notify.services(NOTIFY_SERVICE_SID).notifications.create(
-        #to_binding=["{'binding_type':'sms','address':'+15173031634'}"],
-        identity='00000001',
-        body='test!'
-    )
-    return make_response('test', 201)
 
 def config_database(app):
     """
@@ -281,4 +195,3 @@ def launch_api():
             list_token()
         else:
             gen_token()
-

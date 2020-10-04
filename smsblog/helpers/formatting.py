@@ -5,7 +5,7 @@ import shlex
 def response_string(response):
     status_code = str(response.status_code)
     text = json.loads((response.data).decode('utf-8'))
-    return str(text)
+    return status_code + ' ' + str(text)
 
 
 def request_sms_args(request):
