@@ -1,6 +1,5 @@
 # smsblog documentation coming soon!!!
 
-checkout: http://dpat.life & http://y-s-r.co/apt_home for examples of smsblog in action!!!
 
 TODO:
 - Documentation setup video
